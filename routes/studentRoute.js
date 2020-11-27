@@ -41,22 +41,17 @@ router.get("/:studentId", async (req, res) => {
 	}
 });
 
-router.patch("/", async (req, res) => {
+router.patch("/update", async (req, res) => {
 	try {
-		const post = await student.findOneAndUpdate(
-			{ stduentId: req.body.stduentId },
+		let doc = await student.findOneAndUpdate(
+			{ studentId: req.body.studentId },
 			{ mentor: req.body.mentor },
-			null,
-			function (err, docs) {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log("Original Doc : ", docs);
-				}
+			{
+				new: true,
 			}
 		);
 
-		res.json(post);
+		res.json(doc);
 	} catch (err) {
 		res.json({ message: err });
 	}
