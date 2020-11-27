@@ -4,6 +4,8 @@ const router = express.Router();
 
 const student = require("../models/student");
 
+const mentor = require("../models/mentor");
+
 router.get("/", async (req, res) => {
 	try {
 		const students = await student.find();
@@ -43,7 +45,7 @@ router.get("/:studentId", async (req, res) => {
 
 router.patch("/update", async (req, res) => {
 	try {
-		let doc = await student.findOneAndUpdate(
+		let studentDoc = await student.findOneAndUpdate(
 			{ studentId: req.body.studentId },
 			{ mentor: req.body.mentor },
 			{
@@ -51,7 +53,15 @@ router.patch("/update", async (req, res) => {
 			}
 		);
 
-		res.json(doc);
+		let mentorDoc = await mentor.findOneAndUpdate(
+			{ name: req.body.mentor },
+			{ $push: { students: req.body.studentId } },
+			{
+				new: true,
+			}
+		);
+
+		res.json({ studentDoc, mentorDoc });
 	} catch (err) {
 		res.json({ message: err });
 	}

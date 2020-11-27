@@ -41,22 +41,20 @@ router.get("/:mentorId", async (req, res) => {
 	}
 });
 
-router.patch("/", async (req, res) => {
+router.patch("/update", async (req, res) => {
 	try {
-		const post = await mentor.findOneAndUpdate(
-			{ mentorId: req.body.mentorId },
+		// let doc = await mentor.findOneAndUpdate(
+		// 	{ mentorId: req.body.mentorId },
+		// 	{ $push: { students: req.body.students } },
+		// 	{
+		// 		new: true,
+		// 	}
+		let doc = await mentor.findOneAndUpdate(
+			{ name: req.body.mentor },
 			{ $push: { students: req.body.students } },
-			null,
-			function (err, docs) {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log("Original Doc : ", docs);
-				}
-			}
+			{ new: true }
 		);
-
-		res.json(post);
+		res.json(doc);
 	} catch (err) {
 		res.json({ message: err });
 	}
