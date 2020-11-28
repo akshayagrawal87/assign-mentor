@@ -45,6 +45,16 @@ router.get("/:studentId", async (req, res) => {
 
 router.patch("/update", async (req, res) => {
 	try {
+		const find = await student.findOne({ studentId: req.body.studentId });
+
+		let mentorChange = await mentor.findOneAndUpdate(
+			{ name: find.mentor },
+			{ $pull: { students: req.body.studentId } },
+			{
+				new: true,
+			}
+		);
+
 		let studentDoc = await student.findOneAndUpdate(
 			{ studentId: req.body.studentId },
 			{ mentor: req.body.mentor },
@@ -61,7 +71,7 @@ router.patch("/update", async (req, res) => {
 			}
 		);
 
-		res.json({ studentDoc, mentorDoc });
+		res.json({ studentDoc, mentorDoc, mentorChange });
 	} catch (err) {
 		res.json({ message: err });
 	}
