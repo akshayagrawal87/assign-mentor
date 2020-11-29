@@ -4,10 +4,44 @@ const router = express.Router();
 
 const mentor = require("../models/mentor");
 
+const student = require("../models/student");
+
 router.get("/", async (req, res) => {
 	try {
 		const mentors = await mentor.find();
 		res.json(mentors);
+	} catch (err) {
+		res.json({ message: err });
+	}
+});
+
+router.get("/allotment", async (req, res) => {
+	try {
+		let mentorAlloted = [];
+
+		const mentors = await mentor.find();
+
+		for (let a of mentors) {
+			//console.log(a.students);
+			let studentName = [];
+			for (let i = 0; i < a.students.length; i++) {
+				if (a.students[i] !== null) {
+					const find = await student.findOne({ studentId: a.students[i] });
+					if (find !== null) {
+						console.log(find.name);
+						studentName.push(find.name);
+					}
+				}
+			}
+
+			mentorAlloted.push({
+				mentor: a.name,
+				subject: a.subject,
+				studentNames: studentName,
+			});
+		}
+
+		res.json(mentorAlloted);
 	} catch (err) {
 		res.json({ message: err });
 	}
